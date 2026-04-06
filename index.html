@@ -1725,14 +1725,217 @@ body.lang-ka .welcome__signature {
 @media (max-width: 600px) {
   :root {
     --header-h: 60px;
+    --section-pad: clamp(50px, 10vw, 100px);
+  }
+
+  /* Global text wrapping fix */
+  body {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
   }
 
   .hero__title {
     font-size: 36px;
   }
 
+  /* Section titles & body text */
+  .section-title {
+    font-size: clamp(24px, 6vw, 36px);
+    letter-spacing: 0.02em;
+  }
+
+  .section-body {
+    font-size: 14px;
+    max-width: 100%;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+  }
+
+  /* Welcome / About */
+  .welcome {
+    padding: var(--section-pad) 20px;
+  }
+
+  .welcome__quote {
+    font-size: 18px;
+    line-height: 1.5;
+    padding-left: 16px;
+    margin-bottom: 24px;
+  }
+
+  .welcome__name {
+    font-size: 16px;
+  }
+
+  .welcome__signature {
+    font-size: 22px;
+  }
+
+  /* Rooms */
+  .rooms__header {
+    margin-bottom: 36px;
+  }
+
+  .room-card {
+    flex: 0 0 280px;
+  }
+
+  .room-card__name {
+    font-size: 18px;
+  }
+
+  .room-card__desc {
+    font-size: 12px;
+  }
+
+  /* Cinema Heritage */
+  .cinema {
+    padding: clamp(40px, 8vw, 80px) 16px;
+  }
+
+  .cinema__bg-img {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .cinema__overlay {
+    inset: 0;
+    border-radius: 0;
+  }
+
+  .cinema__inner {
+    padding: 0 12px;
+  }
+
+  .cinema .section-title {
+    font-size: clamp(22px, 6vw, 32px);
+    letter-spacing: 0.02em;
+  }
+
+  .cinema__text {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .cinema__directors {
+    gap: 24px;
+  }
+
+  .cinema__director-name {
+    font-size: 13px;
+  }
+
+  .cinema__director-role {
+    font-size: 10px;
+  }
+
+  /* Philharmonic */
+  .philharmonic {
+    padding: var(--section-pad) 20px;
+  }
+
+  .philharmonic__meta {
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .philharmonic__fact-num {
+    font-size: 22px;
+  }
+
+  .philharmonic__fact-label {
+    font-size: 9px;
+  }
+
+  /* Restaurants */
+  .restaurants {
+    padding: var(--section-pad) 20px;
+  }
+
+  .resto-card__overlay {
+    padding: 24px;
+  }
+
+  .resto-card__name {
+    font-size: 20px;
+  }
+
+  .resto-card__desc {
+    font-size: 12px;
+    max-width: 100%;
+  }
+
+  /* Wellness */
+  .wellness {
+    padding: var(--section-pad) 20px;
+  }
+
+  .wellness__images {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .wellness__feature-text h4 {
+    font-size: 14px;
+  }
+
+  .wellness__feature-text p {
+    font-size: 12px;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    padding: clamp(60px, 12vw, 120px) 20px;
+  }
+
+  .cta-section__title {
+    font-size: clamp(26px, 7vw, 40px);
+    letter-spacing: 0.03em;
+  }
+
+  .cta-section__subtitle {
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  /* Find Us */
+  .findus {
+    padding: var(--section-pad) 20px;
+  }
+
+  .findus__detail-value {
+    font-size: 16px;
+  }
+
+  .findus__map {
+    aspect-ratio: 4/3;
+  }
+
+  /* Footer */
+  .footer {
+    padding: 48px 20px 32px;
+  }
+
   .footer__top {
     grid-template-columns: 1fr;
+  }
+
+  .footer__brand-desc {
+    max-width: 100%;
+  }
+
+  .footer__newsletter-form {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .footer__newsletter-form input {
+    border-right: 1px solid rgba(245, 240, 235, 0.12);
   }
 
   .footer__bottom {
@@ -1741,16 +1944,24 @@ body.lang-ka .welcome__signature {
     text-align: center;
   }
 
+  /* Modal */
   .modal {
     padding: 32px 24px;
+  }
+
+  .modal__title {
+    font-size: 22px;
   }
 
   .modal__row {
     grid-template-columns: 1fr;
   }
 
-  .room-card {
-    flex: 0 0 280px;
+  /* Buttons */
+  .btn {
+    font-size: 10px;
+    padding: 14px 28px;
+    letter-spacing: 0.2em;
   }
 }
 </style>
@@ -1769,11 +1980,6 @@ body.lang-ka .welcome__signature {
   </div>
 </section>
 
-<!-- Scroll hint over video -->
-<div class="hero__scroll">
-  <span data-i18n="hero.scroll">Scroll</span>
-  <div class="hero__scroll-line"></div>
-</div>
 
 <!-- Spacer so content starts below the full-screen video -->
 <div class="hero-spacer"></div>
