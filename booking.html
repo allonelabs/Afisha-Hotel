@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Your Stay — Hotel Afisha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Libre+Caslon+Display&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&family=Noto+Serif+Georgian:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --dark: #0e0e1a;
+  --dark-surface: #151525;
+  --navy: #1a1a2e;
+  --gold: #ffffff;
+  --gold-light: #f0f0f0;
+  --taupe: #a19581;
+  --cream: #f5f0eb;
+  --offwhite: #faf8f5;
+  --text-dark: #2c2c2c;
+  --text-muted: #6b6363;
+  --accent: #c9a96e;
+
+  --font-display: 'Libre Caslon Display', 'Cormorant Garamond', serif;
+  --font-heading: 'Cormorant Garamond', serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--dark);
+  color: var(--cream);
+  min-height: 100vh;
+}
+
+/* ── Header ──────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(24px, 4vw, 60px);
+  height: 72px;
+  border-bottom: 1px solid rgba(245, 240, 235, 0.06);
+}
+
+.header__logo {
+  text-decoration: none;
+  white-space: nowrap;
+  display: inline-block;
+  overflow: hidden;
+  height: 22px;
+}
+
+.header__logo img {
+  filter: brightness(0) saturate(100%) invert(15%) sepia(95%) saturate(6000%) hue-rotate(355deg) brightness(95%) contrast(95%);
+  margin-top: -2px;
+}
+
+.header__back {
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.3s;
+}
+
+.header__back:hover {
+  color: var(--cream);
+}
+
+.header__back svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Page Title ──────────────────────── */
+.page-title {
+  text-align: center;
+  padding: clamp(40px, 6vw, 80px) 24px clamp(30px, 4vw, 50px);
+}
+
+.page-title h1 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.page-title p {
+  font-size: 14px;
+  color: rgba(245, 240, 235, 0.4);
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ── Step Indicator ──────────────────── */
+.steps {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: clamp(30px, 4vw, 50px);
+  padding: 0 24px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 235, 0.25);
+  transition: color 0.3s;
+}
+
+.step.active {
+  color: var(--cream);
+}
+
+.step.completed {
+  color: var(--accent);
+}
+
+.step__number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(245, 240, 235, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.step.active .step__number {
+  border-color: var(--cream);
+  background: rgba(245, 240, 235, 0.08);
+}
+
+.step.completed .step__number {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--dark);
+}
+
+.step__line {
+  width: 40px;
+  height: 1px;
+  background: rgba(245, 240, 235, 0.1);
+  margin: 0 16px;
+}
+
+/* ── Room Selection (Step 1) ─────────── */
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 4vw, 60px) clamp(60px, 8vw, 100px);
+}
+
+.room {
+  background: var(--dark-surface);
+  border: 1px solid rgba(245, 240, 235, 0.06);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.4s, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.room:hover {
+  border-color: rgba(245, 240, 235, 0.15);
+  transform: translateY(-4px);
+}
+
+.room.selected {
+  border-color: var(--accent);
+}
+
+.room__img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  position: relative;
+}
+
+.room__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.room:hover .room__img img {
+  transform: scale(1.04);
+}
+
+.room__select-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.room.selected .room__select-badge {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.room__select-badge svg {
+  width: 14px;
+  height: 14px;
+  stroke: white;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.room.selected .room__select-badge svg {
+  opacity: 1;
+}
+
+.room__body {
+  padding: 20px 24px 24px;
+}
+
+.room__name {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.room__desc {
+  font-size: 12px;
+  line-height: 1.7;
+  color: rgba(245, 240, 235, 0.45);
+  margin-bottom: 16px;
+}
+
+.room__price {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--cream);
+}
+
+.room__price small {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--taupe);
+  letter-spacing: 0.05em;
+}
+
+/* ── Booking Layout (Step 2) ─────────── */
+.booking-layout {
+  display: none;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 4vw, 60px) clamp(60px, 8vw, 100px);
+  gap: 40px;
+}
+
+.booking-layout.active {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Form Panels ─────────────────────── */
+.form-panel {
+  background: var(--dark-surface);
+  border: 1px solid rgba(245, 240, 235, 0.06);
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.form-panel__title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cream);
+  margin-bottom: 24px;
+}
+
+.form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form__row--4 {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.form__row--3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form__field--full {
+  grid-column: 1 / -1;
+}
+
+.form__field label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--taupe);
+}
+
+.form__field label .required {
+  color: #c9a96e;
+  margin-left: 2px;
+}
+
+.form__field input,
+.form__field select,
+.form__field textarea {
+  padding: 13px 16px;
+  background: rgba(245, 240, 235, 0.04);
+  border: 1px solid rgba(245, 240, 235, 0.1);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.3s;
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+.form__field textarea {
+  resize: vertical;
+  min-height: 44px;
+  max-height: 120px;
+}
+
+.form__field input:focus,
+.form__field select:focus,
+.form__field textarea:focus {
+  border-color: var(--accent);
+}
+
+.form__field input::placeholder,
+.form__field textarea::placeholder {
+  color: rgba(245, 240, 235, 0.2);
+}
+
+.form__field select option {
+  background: var(--dark);
+  color: var(--cream);
+}
+
+.form__field input.error {
+  border-color: #e74c3c;
+}
+
+/* ── Toggle Switch ───────────────────── */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: rgba(245, 240, 235, 0.6);
+}
+
+.toggle {
+  width: 40px;
+  height: 22px;
+  background: rgba(245, 240, 235, 0.1);
+  border-radius: 11px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+  flex-shrink: 0;
+}
+
+.toggle.active {
+  background: var(--accent);
+}
+
+.toggle::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--cream);
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s;
+}
+
+.toggle.active::after {
+  transform: translateX(18px);
+}
+
+/* ── Phone Input ─────────────────────── */
+.phone-group {
+  display: flex;
+  gap: 0;
+}
+
+.phone-group select {
+  width: 100px;
+  border-right: none;
+  flex-shrink: 0;
+  padding: 13px 10px;
+  background: rgba(245, 240, 235, 0.06);
+  border: 1px solid rgba(245, 240, 235, 0.1);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+.phone-group select option {
+  background: var(--dark);
+  color: var(--cream);
+}
+
+.phone-group input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Order Summary Sidebar ───────────── */
+.sidebar {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+}
+
+.summary-card {
+  background: var(--dark-surface);
+  border: 1px solid rgba(245, 240, 235, 0.06);
+  padding: 28px;
+  margin-bottom: 20px;
+}
+
+.summary__room {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(245, 240, 235, 0.06);
+}
+
+.summary__room-img {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.summary__room-name {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.summary__room-type {
+  font-size: 11px;
+  color: var(--taupe);
+}
+
+.summary__dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(245, 240, 235, 0.06);
+}
+
+.summary__date-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  margin-bottom: 4px;
+}
+
+.summary__date-value {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  letter-spacing: 0.03em;
+}
+
+.summary__line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: rgba(245, 240, 235, 0.6);
+}
+
+.summary__line--total {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(245, 240, 235, 0.1);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--cream);
+}
+
+.summary__line a {
+  color: var(--accent);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.summary__line a:hover {
+  text-decoration: underline;
+}
+
+/* ── Promo Code ──────────────────────── */
+.promo {
+  background: var(--dark-surface);
+  border: 1px solid rgba(245, 240, 235, 0.06);
+  padding: 18px 28px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: rgba(245, 240, 235, 0.5);
+}
+
+.promo a {
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.promo a:hover {
+  text-decoration: underline;
+}
+
+.promo__input {
+  display: none;
+  margin-top: 12px;
+}
+
+.promo__input.open {
+  display: flex;
+  gap: 8px;
+}
+
+.promo__input input {
+  flex: 1;
+  padding: 10px 14px;
+  background: rgba(245, 240, 235, 0.04);
+  border: 1px solid rgba(245, 240, 235, 0.1);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  border-radius: 0;
+}
+
+.promo__input button {
+  padding: 10px 20px;
+  background: var(--accent);
+  border: none;
+  color: var(--dark);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.promo__input button:hover {
+  opacity: 0.85;
+}
+
+/* ── Credit Card Panel ───────────────── */
+.card-panel {
+  background: var(--dark-surface);
+  border: 1px solid rgba(245, 240, 235, 0.06);
+  padding: 28px;
+  margin-bottom: 20px;
+}
+
+.card-panel__title {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.card-panel .form__row {
+  margin-bottom: 12px;
+}
+
+.card-disclaimer {
+  font-size: 11px;
+  line-height: 1.65;
+  color: rgba(245, 240, 235, 0.35);
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(245, 240, 235, 0.06);
+}
+
+.card-logos {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.card-logos span {
+  padding: 4px 10px;
+  background: rgba(245, 240, 235, 0.06);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: rgba(245, 240, 235, 0.5);
+  border-radius: 2px;
+}
+
+/* ── Submit Button ───────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 16px 32px;
+  border: 1px solid var(--cream);
+  color: var(--cream);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--cream);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 0;
+}
+
+.btn:hover::before {
+  transform: scaleX(1);
+}
+
+.btn:hover {
+  color: var(--dark);
+}
+
+.btn span,
+.btn svg {
+  position: relative;
+  z-index: 1;
+}
+
+.btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.btn:hover svg {
+  transform: translateX(4px);
+}
+
+.btn--accent {
+  border-color: var(--accent);
+  color: var(--dark);
+  background: var(--accent);
+}
+
+.btn--accent::before {
+  background: #b8943f;
+}
+
+.btn--accent:hover {
+  color: var(--dark);
+}
+
+.btn--ghost {
+  border-color: rgba(245, 240, 235, 0.15);
+  color: var(--taupe);
+  width: auto;
+}
+
+.btn--ghost::before {
+  background: rgba(245, 240, 235, 0.08);
+}
+
+.btn--ghost:hover {
+  color: var(--cream);
+}
+
+/* ── Footer ──────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 24px;
+  border-top: 1px solid rgba(245, 240, 235, 0.06);
+  font-size: 11px;
+  color: rgba(245, 240, 235, 0.25);
+  letter-spacing: 0.05em;
+}
+
+/* ── Reveal ──────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Responsive ──────────────────────── */
+@media (max-width: 900px) {
+  .booking-layout.active {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+  }
+
+  .steps {
+    gap: 0;
+  }
+
+  .step__line {
+    width: 20px;
+    margin: 0 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .rooms-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .form__row,
+  .form__row--4,
+  .form__row--3 {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    height: 60px;
+  }
+
+  .summary__dates {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-panel {
+    padding: 24px 20px;
+  }
+
+  .summary-card,
+  .card-panel {
+    padding: 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a href="index.html" class="header__logo"><img src="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/66f5b9c4bd8e0267ee3b80bf_Afisha_Logo_White.png" alt="Afisha" style="height: 35px;"></a>
+  <a href="index.html" class="header__back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back to Hotel
+  </a>
+</header>
+
+<div class="page-title">
+  <h1 id="pageHeading">Choose Your Room</h1>
+  <p id="pageSubtitle">Select from our curated collection of rooms and suites.</p>
+</div>
+
+<div class="steps">
+  <div class="step active" id="step1">
+    <span class="step__number">1</span>
+    Room
+  </div>
+  <span class="step__line"></span>
+  <div class="step" id="step2">
+    <span class="step__number">2</span>
+    Details
+  </div>
+  <span class="step__line"></span>
+  <div class="step" id="step3">
+    <span class="step__number">3</span>
+    Payment
+  </div>
+</div>
+
+<!-- ═══ STEP 1: Room Selection ═══ -->
+<div class="rooms-grid" id="roomsGrid">
+
+  <div class="room reveal" data-room="Studio Room" data-price="180" data-img="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/67402dc9f0f0a08187dfc222_standard.jpg">
+    <div class="room__img">
+      <img src="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/67402dc9f0f0a08187dfc222_standard.jpg" alt="Studio Room">
+      <div class="room__select-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+    </div>
+    <div class="room__body">
+      <h3 class="room__name">Studio Room</h3>
+      <p class="room__desc">Intimate and refined, with warm oak tones and soft natural light — a quiet scene for two.</p>
+      <span class="room__price">$180 <small>/ night</small></span>
+    </div>
+  </div>
+
+  <div class="room reveal" data-room="Deluxe Room" data-price="260" data-img="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/67402ee9e943da7c3d131e1c_deluxe2.jpg">
+    <div class="room__img">
+      <img src="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/67402ee9e943da7c3d131e1c_deluxe2.jpg" alt="Deluxe Room">
+      <div class="room__select-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+    </div>
+    <div class="room__body">
+      <h3 class="room__name">Deluxe Room</h3>
+      <p class="room__desc">A generous canvas of comfort with city views that frame Tbilisi like a moving picture.</p>
+      <span class="room__price">$260 <small>/ night</small></span>
+    </div>
+  </div>
+
+  <div class="room reveal" data-room="Superior Room" data-price="340" data-img="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/67403096dd808218743f514d_superior.jpg">
+    <div class="room__img">
+      <img src="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/67403096dd808218743f514d_superior.jpg" alt="Superior Room">
+      <div class="room__select-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+    </div>
+    <div class="room__body">
+      <h3 class="room__name">Superior Room</h3>
+      <p class="room__desc">Elevated space where every detail is considered — from handpicked Georgian art to Italian linens.</p>
+      <span class="room__price">$340 <small>/ night</small></span>
+    </div>
+  </div>
+
+  <div class="room reveal" data-room="Junior Suite" data-price="480" data-img="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/67402fb0654d0668668046de_junior%20suite2.jpg">
+    <div class="room__img">
+      <img src="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/67402fb0654d0668668046de_junior%20suite2.jpg" alt="Junior Suite">
+      <div class="room__select-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+    </div>
+    <div class="room__body">
+      <h3 class="room__name">Junior Suite</h3>
+      <p class="room__desc">A private screening room of your own — separate living area with panoramic Old Tbilisi views.</p>
+      <span class="room__price">$480 <small>/ night</small></span>
+    </div>
+  </div>
+
+  <div class="room reveal" data-room="Executive Suite" data-price="720" data-img="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/6740313460da430d0d25e34b_executive%20copy.jpg">
+    <div class="room__img">
+      <img src="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/6740313460da430d0d25e34b_executive%20copy.jpg" alt="Executive Suite">
+      <div class="room__select-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+    </div>
+    <div class="room__body">
+      <h3 class="room__name">Executive Suite</h3>
+      <p class="room__desc">The director's cut — our most lavish accommodation with a wrap-around terrace and private study.</p>
+      <span class="room__price">$720 <small>/ night</small></span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ STEP 2 & 3: Guest Details + Payment ═══ -->
+<div class="booking-layout" id="bookingLayout">
+
+  <!-- Left Column: Forms -->
+  <div class="forms-column">
+
+    <!-- Guest Details -->
+    <div class="form-panel">
+      <h3 class="form-panel__title">Guest Details</h3>
+      <div class="form__row">
+        <div class="form__field">
+          <label>First Name <span class="required">*</span></label>
+          <input type="text" id="firstName" placeholder="First Name" required>
+        </div>
+        <div class="form__field">
+          <label>Last Name <span class="required">*</span></label>
+          <input type="text" id="lastName" placeholder="Last Name" required>
+        </div>
+      </div>
+      <div class="form__row--4 form__row">
+        <div class="form__field">
+          <label>Adults</label>
+          <select id="adults">
+            <option>1</option>
+            <option selected>2</option>
+            <option>3</option>
+            <option>4</option>
+          </select>
+        </div>
+        <div class="form__field">
+          <label>Children</label>
+          <select id="children">
+            <option selected>0</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+          </select>
+        </div>
+        <div class="form__field" style="grid-column: span 2;">
+          <label>Estimated Arrival Time</label>
+          <select id="arrivalTime">
+            <option>12:00 pm</option>
+            <option>01:00 pm</option>
+            <option>02:00 pm</option>
+            <option selected>03:00 pm</option>
+            <option>04:00 pm</option>
+            <option>05:00 pm</option>
+            <option>06:00 pm</option>
+            <option>07:00 pm</option>
+            <option>08:00 pm</option>
+            <option>09:00 pm</option>
+            <option>10:00 pm</option>
+            <option>11:00 pm</option>
+            <option>12:00 am</option>
+          </select>
+        </div>
+      </div>
+      <div class="form__row">
+        <div class="form__field form__field--full">
+          <label>Special Request</label>
+          <textarea id="specialRequest" placeholder="Any special requests or preferences..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Details -->
+    <div class="form-panel">
+      <h3 class="form-panel__title">Contact Details</h3>
+
+      <div class="toggle-row">
+        <div class="toggle" id="bookingForOther" onclick="this.classList.toggle('active')"></div>
+        I am booking for someone else
+      </div>
+
+      <div class="form__row">
+        <div class="form__field">
+          <label>Phone <span class="required">*</span></label>
+          <div class="phone-group">
+            <select id="countryCode">
+              <option value="+995" selected>+995</option>
+              <option value="+1">+1</option>
+              <option value="+44">+44</option>
+              <option value="+49">+49</option>
+              <option value="+33">+33</option>
+              <option value="+971">+971</option>
+              <option value="+7">+7</option>
+              <option value="+90">+90</option>
+              <option value="+86">+86</option>
+              <option value="+81">+81</option>
+            </select>
+            <input type="tel" id="phone" placeholder="Contact no">
+          </div>
+        </div>
+        <div class="form__field">
+          <label>Email <span class="required">*</span></label>
+          <input type="email" id="email" placeholder="example@email.com" required>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn--ghost" onclick="goToStep(1)" style="margin-bottom: 24px; width: auto; display: inline-flex;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-right: 4px;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      <span>Change Room</span>
+    </button>
+
+  </div>
+
+  <!-- Right Column: Summary + Payment -->
+  <div class="sidebar">
+
+    <!-- Order Summary -->
+    <div class="summary-card">
+      <div class="summary__room">
+        <img class="summary__room-img" id="summaryImg" src="" alt="">
+        <div>
+          <div class="summary__room-name" id="summaryRoomName">—</div>
+          <div class="summary__room-type">1 Night</div>
+        </div>
+      </div>
+
+      <div class="summary__dates">
+        <div>
+          <div class="summary__date-label">Check In</div>
+          <div class="summary__date-value" id="summaryCheckin">—</div>
+        </div>
+        <div>
+          <div class="summary__date-label">Check Out</div>
+          <div class="summary__date-value" id="summaryCheckout">—</div>
+        </div>
+      </div>
+
+      <div class="summary__line">
+        <span>Room rate</span>
+        <span id="summaryRate">—</span>
+      </div>
+      <div class="summary__line">
+        <span>Taxes & fees</span>
+        <span id="summaryTax">—</span>
+      </div>
+      <div class="summary__line summary__line--total">
+        <span>Total</span>
+        <span id="summaryTotal">—</span>
+      </div>
+    </div>
+
+    <!-- Promo Code -->
+    <div class="promo">
+      Do you have a promo code? <a onclick="document.querySelector('.promo__input').classList.toggle('open')">Click here</a>
+      <div class="promo__input">
+        <input type="text" placeholder="Enter code">
+        <button>Apply</button>
+      </div>
+    </div>
+
+    <!-- Credit Card -->
+    <div class="card-panel">
+      <h4 class="card-panel__title">Credit Card</h4>
+
+      <div class="form__row">
+        <div class="form__field form__field--full">
+          <label>Name on Card <span class="required">*</span></label>
+          <input type="text" id="cardName" placeholder="Name On Card" required>
+        </div>
+      </div>
+      <div class="form__row">
+        <div class="form__field form__field--full">
+          <label>Card Number <span class="required">*</span></label>
+          <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" class="card-number" required>
+        </div>
+      </div>
+      <div class="form__row" style="grid-template-columns: 1fr 90px;">
+        <div class="form__field">
+          <label>Expiry <span class="required">*</span></label>
+          <input type="text" id="cardExpiry" placeholder="MM / YY" maxlength="7" class="card-expiry" required>
+        </div>
+        <div class="form__field">
+          <label>CVV <span class="required">*</span></label>
+          <input type="text" id="cardCvv" placeholder="***" maxlength="4" class="card-cvv" required>
+        </div>
+      </div>
+
+      <p class="card-disclaimer">The cardholder and guest names indicated in the reservation must be identical. The guest must provide the credit card indicated in the reservation at check-in. All non-refundable reservations must be paid upon booking. All refundable reservations must be fully paid 2 days before arrival.</p>
+
+      <div class="card-logos">
+        <span>VISA</span>
+        <span>MC</span>
+        <span>AMEX</span>
+      </div>
+    </div>
+
+    <!-- Total + Submit -->
+    <div class="summary-card" style="padding: 20px 28px;">
+      <div class="summary__line summary__line--total" style="margin:0; padding:0; border:0;">
+        <span>Total</span>
+        <span id="summaryTotal2">—</span>
+      </div>
+    </div>
+
+    <button class="btn btn--accent" onclick="submitBooking()" style="margin-top: 16px;">
+      <span>Confirm & Pay</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+
+  </div>
+
+</div>
+
+<footer class="footer">
+  Hotel Afisha, 5 Petre Melikishvili Street, Tbilisi, K'alak'i T'bilisi, Georgia 0108
+</footer>
+
+<script>
+(function () {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const fmtShort = d => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const fmt = d => d.toISOString().split('T')[0];
+
+  let selectedRoom = null;
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '-40px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Room selection
+  document.querySelectorAll('.room').forEach(room => {
+    room.addEventListener('click', () => {
+      document.querySelectorAll('.room').forEach(r => r.classList.remove('selected'));
+      room.classList.add('selected');
+      selectedRoom = {
+        name: room.dataset.room,
+        price: parseInt(room.dataset.price),
+        img: room.dataset.img
+      };
+
+      // Auto-advance to step 2 after short delay
+      setTimeout(() => goToStep(2), 400);
+    });
+  });
+
+  // Step navigation
+  window.goToStep = function(step) {
+    const grid = document.getElementById('roomsGrid');
+    const layout = document.getElementById('bookingLayout');
+    const heading = document.getElementById('pageHeading');
+    const subtitle = document.getElementById('pageSubtitle');
+    const s1 = document.getElementById('step1');
+    const s2 = document.getElementById('step2');
+    const s3 = document.getElementById('step3');
+
+    if (step === 1) {
+      grid.style.display = '';
+      layout.classList.remove('active');
+      heading.textContent = 'Choose Your Room';
+      subtitle.textContent = 'Select from our curated collection of rooms and suites.';
+      s1.className = 'step active';
+      s2.className = 'step';
+      s3.className = 'step';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (step === 2 && selectedRoom) {
+      grid.style.display = 'none';
+      layout.classList.add('active');
+      heading.textContent = 'Complete Your Booking';
+      subtitle.textContent = selectedRoom.name + ' — $' + selectedRoom.price + ' per night';
+      s1.className = 'step completed';
+      s2.className = 'step active';
+      s3.className = 'step active';
+
+      // Update summary
+      document.getElementById('summaryImg').src = selectedRoom.img;
+      document.getElementById('summaryRoomName').textContent = selectedRoom.name;
+      document.getElementById('summaryCheckin').textContent = fmtShort(today);
+      document.getElementById('summaryCheckout').textContent = fmtShort(tomorrow);
+      document.getElementById('summaryRate').textContent = 'USD ' + selectedRoom.price;
+
+      const tax = Math.round(selectedRoom.price * 0.18);
+      document.getElementById('summaryTax').textContent = 'USD ' + tax;
+
+      const total = selectedRoom.price + tax;
+      document.getElementById('summaryTotal').textContent = 'USD ' + total;
+      document.getElementById('summaryTotal2').textContent = 'USD ' + total;
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Card formatting
+  document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('card-number')) {
+      let v = e.target.value.replace(/\D/g, '').substring(0, 16);
+      e.target.value = v.replace(/(.{4})/g, '$1 ').trim();
+    }
+    if (e.target.classList.contains('card-expiry')) {
+      let v = e.target.value.replace(/\D/g, '').substring(0, 4);
+      if (v.length > 2) v = v.substring(0, 2) + ' / ' + v.substring(2);
+      e.target.value = v;
+    }
+    if (e.target.classList.contains('card-cvv')) {
+      e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+    }
+  });
+
+  // Submit
+  window.submitBooking = function() {
+    const required = [
+      document.getElementById('firstName'),
+      document.getElementById('lastName'),
+      document.getElementById('phone'),
+      document.getElementById('email'),
+      document.getElementById('cardName'),
+      document.getElementById('cardNumber'),
+      document.getElementById('cardExpiry'),
+      document.getElementById('cardCvv')
+    ];
+
+    let valid = true;
+    required.forEach(input => {
+      if (!input.value.trim()) {
+        input.classList.add('error');
+        valid = false;
+      } else {
+        input.classList.remove('error');
+      }
+    });
+
+    if (!valid) {
+      document.querySelector('.form-panel').scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+
+    alert('Booking confirmed!\n\nRoom: ' + selectedRoom.name + '\nCheck-in: ' + fmtShort(today) + '\nCheck-out: ' + fmtShort(tomorrow) + '\n\nA confirmation email has been sent to ' + document.getElementById('email').value + '. Thank you!');
+  };
+
+  // Clear error on input
+  document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('error')) {
+      e.target.classList.remove('error');
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
