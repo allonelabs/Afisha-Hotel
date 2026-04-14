@@ -1982,12 +1982,26 @@ body.lang-ka .welcome__signature {
 <!-- ═══════════ HERO (video only, fixed behind content) ═══════════ -->
 <section class="hero" id="hero">
   <div class="hero__bg">
-    <video autoplay muted loop playsinline>
-      <source src="Afisha_HD.mp4" type="video/mp4">
-    </video>
+    <video id="heroVideo" autoplay muted loop playsinline></video>
+    <script>
+      (function() {
+        var v = document.getElementById('heroVideo');
+        if (window.innerWidth <= 768) {
+          v.innerHTML = '<source src="Afisha_HD.webm" type="video/webm">'
+                      + '<source src="Afisha_HD_optimized.mp4" type="video/mp4">';
+        } else {
+          v.innerHTML = '<source src="Afisha_HD.mp4" type="video/mp4">';
+        }
+        v.load();
+      })();
+    </script>
   </div>
   <div class="hero__logo">
     <img src="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/66f5b9c4bd8e0267ee3b80bf_Afisha_Logo_White.png" alt="Hotel Afisha">
+  </div>
+  <div class="hero__scroll">
+    <span>Scroll</span>
+    <div class="hero__scroll-line"></div>
   </div>
 </section>
 
