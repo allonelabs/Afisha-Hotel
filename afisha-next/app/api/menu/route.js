@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-const DATA_FILE = path.join(process.cwd(), 'data', 'events.json');
+const DATA_FILE = path.join(process.cwd(), 'data', 'menu.json');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -10,7 +10,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-function getEvents() {
+function getMenu() {
   return JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
 }
 
@@ -19,27 +19,28 @@ export async function OPTIONS() {
 }
 
 export async function GET() {
-  return NextResponse.json(getEvents(), { headers: corsHeaders });
+  return NextResponse.json(getMenu(), { headers: corsHeaders });
 }
 
 export async function POST(request) {
   const body = await request.json();
-  if (!body.title || !body.date) {
-    return NextResponse.json({ error: 'Title and date are required' }, { status: 400 });
+  if (!body.name || !body.category) {
+    return NextResponse.json({ error: 'Name and category are required' }, { status: 400, headers: corsHeaders });
   }
 
-  const events = getEvents();
-  const newEvent = {
+  const menu = getMenu();
+  const newItem = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
-    title: body.title,
-    date: body.date,
-    time: body.time || '',
-    location: body.location || 'Hotel Afisha',
+    name: body.name,
+    category: body.category,
+    meal: body.meal || 'Breakfast',
+    restaurant: body.restaurant || 'Brasserie',
+    price: body.price || '',
     desc: body.desc || '',
     img: body.img || '',
     createdAt: new Date().toISOString(),
   };
-  events.push(newEvent);
-  fs.writeFileSync(DATA_FILE, JSON.stringify(events, null, 2));
-  return NextResponse.json(newEvent, { status: 201 });
+  menu.push(newItem);
+  fs.writeFileSync(DATA_FILE, JSON.stringify(menu, null, 2));
+  return NextResponse.json(newItem, { status: 201, headers: corsHeaders });
 }

@@ -9,21 +9,25 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
 
-  const [bookings, setBookings] = useState([]);
   const [subscribers, setSubscribers] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [events, setEvents] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [editingReview, setEditingReview] = useState(null);
   const [reviewForm, setReviewForm] = useState({ name: '', country: '', text: '', rating: 5 });
+  const [showMenuForm, setShowMenuForm] = useState(false);
+  const [editingMenuItem, setEditingMenuItem] = useState(null);
+  const [menuForm, setMenuForm] = useState({ name: '', category: 'Starter', restaurant: 'Brasserie', meal: 'Breakfast', price: '', desc: '', img: '' });
+  const [menuFilter, setMenuFilter] = useState('all');
+  const [mealFilter, setMealFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
   const [tab, setTab] = useState('dashboard');
-  const [filterStatus, setFilterStatus] = useState('all');
   const [showRoomForm, setShowRoomForm] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
-  const [roomForm, setRoomForm] = useState({ name: '', price: '', img: '', desc: '' });
+  const [roomForm, setRoomForm] = useState({ name: '', size: '', img: '', desc: '' });
   const [showEventForm, setShowEventForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [eventForm, setEventForm] = useState({ title: '', date: '', time: '', location: 'Hotel Afisha', desc: '', img: '' });
@@ -66,19 +70,19 @@ export default function AdminPage() {
 
   const fetchData = async () => {
     setLoading(true);
-    const [bRes, sRes, rRes, eRes, rvRes] = await Promise.all([
-      fetch('/api/bookings'),
+    const [mRes, sRes, rRes, eRes, rvRes] = await Promise.all([
+      fetch('/api/menu'),
       fetch('/api/newsletter'),
       fetch('/api/rooms'),
       fetch('/api/events'),
       fetch('/api/reviews'),
     ]);
-    const bData = await bRes.json();
+    const mData = await mRes.json();
     const sData = await sRes.json();
     const rData = await rRes.json();
     const eData = await eRes.json();
     const rvData = await rvRes.json();
-    setBookings(bData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+    setMenuItems(mData);
     setSubscribers(sData.sort((a, b) => new Date(b.subscribedAt) - new Date(a.subscribedAt)));
     setRooms(rData);
     setEvents(eData.sort((a, b) => new Date(a.date) - new Date(b.date)));
@@ -86,24 +90,58 @@ export default function AdminPage() {
     setLoading(false);
   };
 
+  // Menu CRUD
+  const openMenuForm = (item = null) => {
+    if (item) {
+      setEditingMenuItem(item);
+      setMenuForm({ name: item.name, category: item.category, restaurant: item.restaurant, meal: item.meal || 'Breakfast', price: item.price, desc: item.desc, img: item.img });
+    } else {
+      setEditingMenuItem(null);
+      setMenuForm({ name: '', category: 'Starter', restaurant: 'Brasserie', meal: 'Breakfast', price: '', desc: '', img: '' });
+    }
+    setShowMenuForm(true);
+  };
+
+  const saveMenuItem = async () => {
+    if (!menuForm.name || !menuForm.category) return;
+    if (editingMenuItem) {
+      await fetch(`/api/menu/${editingMenuItem.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(menuForm) });
+    } else {
+      await fetch('/api/menu', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(menuForm) });
+    }
+    setShowMenuForm(false);
+    await fetchData();
+  };
+
+  const deleteMenuItem = async (id) => {
+    await fetch(`/api/menu/${id}`, { method: 'DELETE' });
+    await fetchData();
+  };
+
+  const filteredMenu = menuItems.filter(m => {
+    if (menuFilter !== 'all' && m.restaurant !== menuFilter) return false;
+    if (mealFilter !== 'all' && m.meal !== mealFilter) return false;
+    return true;
+  });
+
   // Room CRUD
   const openRoomForm = (room = null) => {
     if (room) {
       setEditingRoom(room);
-      setRoomForm({ name: room.name, price: String(room.price), img: room.img, desc: room.desc });
+      setRoomForm({ name: room.name, size: String(room.size || room.price || ''), img: room.img, desc: room.desc });
     } else {
       setEditingRoom(null);
-      setRoomForm({ name: '', price: '', img: '', desc: '' });
+      setRoomForm({ name: '', size: '', img: '', desc: '' });
     }
     setShowRoomForm(true);
   };
 
   const saveRoom = async () => {
-    if (!roomForm.name || !roomForm.price) return;
+    if (!roomForm.name || !roomForm.size) return;
     if (editingRoom) {
-      await fetch(`/api/rooms/${editingRoom.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...roomForm, price: Number(roomForm.price) }) });
+      await fetch(`/api/rooms/${editingRoom.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...roomForm, size: Number(roomForm.size) }) });
     } else {
-      await fetch('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...roomForm, price: Number(roomForm.price) }) });
+      await fetch('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...roomForm, size: Number(roomForm.size) }) });
     }
     setShowRoomForm(false);
     fetchData();
@@ -194,45 +232,12 @@ export default function AdminPage() {
     setUploading(false);
   };
 
-  const updateStatus = async (id, status) => {
-    await fetch(`/api/bookings/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    });
-    fetchData();
-    if (selected?.id === id) setSelected(prev => ({ ...prev, status }));
-  };
-
-  const deleteBooking = async (id) => {
-    await fetch(`/api/bookings/${id}`, { method: 'DELETE' });
-    await fetchData();
-    if (selected?.id === id) setSelected(null);
-  };
-
-  const statusColor = (s) => {
-    if (s === 'confirmed') return '#4caf50';
-    if (s === 'cancelled') return '#e74c3c';
-    return '#c9a96e';
-  };
-
-  const fmtDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const fmtDateTime = (d) => new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
   // Stats
-  const totalRevenue = bookings.filter(b => b.status === 'confirmed').reduce((s, b) => s + (b.price || 0), 0);
-  const pendingCount = bookings.filter(b => b.status === 'pending').length;
-  const confirmedCount = bookings.filter(b => b.status === 'confirmed').length;
-  const cancelledCount = bookings.filter(b => b.status === 'cancelled').length;
-
-  const todayStr = new Date().toISOString().split('T')[0];
-  const todayBookings = bookings.filter(b => b.checkin === todayStr).length;
-
-  const filteredBookings = filterStatus === 'all' ? bookings : bookings.filter(b => b.status === filterStatus);
-
-  // Room stats
-  const roomCounts = {};
-  bookings.forEach(b => { roomCounts[b.room] = (roomCounts[b.room] || 0) + 1; });
+  const pendingReviews = reviews.filter(r => r.status === 'pending').length;
+  const menuByRestaurant = {};
+  menuItems.forEach(m => { menuByRestaurant[m.restaurant] = (menuByRestaurant[m.restaurant] || 0) + 1; });
 
   // ── LOGIN SCREEN ──
   if (checking) {
@@ -290,7 +295,7 @@ export default function AdminPage() {
 
       {/* Navigation */}
       <nav className={styles.nav}>
-        {['dashboard', 'bookings', 'rooms', 'events', 'reviews', 'subscribers'].map(t => (
+        {['dashboard', 'menu', 'rooms', 'events', 'reviews', 'subscribers'].map(t => (
           <button key={t} className={`${styles.navBtn} ${tab === t ? styles.navActive : ''}`} onClick={() => { setTab(t); setSelected(null); }}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
@@ -304,78 +309,72 @@ export default function AdminPage() {
           {/* ── DASHBOARD TAB ── */}
           {tab === 'dashboard' && (
             <div className={styles.dashContent}>
-              {/* Stats Row */}
               <div className={styles.statsGrid}>
                 <div className={styles.statCard}>
-                  <span className={styles.statNum}>{bookings.length}</span>
-                  <span className={styles.statLabel}>Total Bookings</span>
+                  <span className={styles.statNum}>{menuItems.length}</span>
+                  <span className={styles.statLabel}>Menu Items</span>
                 </div>
                 <div className={styles.statCard}>
-                  <span className={styles.statNum} style={{ color: '#c9a96e' }}>{pendingCount}</span>
-                  <span className={styles.statLabel}>Pending</span>
+                  <span className={styles.statNum}>{rooms.length}</span>
+                  <span className={styles.statLabel}>Rooms</span>
                 </div>
                 <div className={styles.statCard}>
-                  <span className={styles.statNum} style={{ color: '#4caf50' }}>{confirmedCount}</span>
-                  <span className={styles.statLabel}>Confirmed</span>
+                  <span className={styles.statNum}>{events.length}</span>
+                  <span className={styles.statLabel}>Events</span>
                 </div>
                 <div className={styles.statCard}>
-                  <span className={styles.statNum} style={{ color: '#e74c3c' }}>{cancelledCount}</span>
-                  <span className={styles.statLabel}>Cancelled</span>
+                  <span className={styles.statNum}>{reviews.length}</span>
+                  <span className={styles.statLabel}>Reviews</span>
                 </div>
                 <div className={styles.statCard}>
-                  <span className={styles.statNum}>${totalRevenue}</span>
-                  <span className={styles.statLabel}>Revenue (Confirmed)</span>
-                </div>
-                <div className={styles.statCard}>
-                  <span className={styles.statNum}>{todayBookings}</span>
-                  <span className={styles.statLabel}>Check-ins Today</span>
+                  <span className={styles.statNum} style={{ color: '#c9a96e' }}>{pendingReviews}</span>
+                  <span className={styles.statLabel}>Pending Reviews</span>
                 </div>
                 <div className={styles.statCard}>
                   <span className={styles.statNum}>{subscribers.length}</span>
-                  <span className={styles.statLabel}>Newsletter Subscribers</span>
+                  <span className={styles.statLabel}>Subscribers</span>
                 </div>
                 <div className={styles.statCard}>
-                  <span className={styles.statNum}>{Object.keys(roomCounts).length}</span>
-                  <span className={styles.statLabel}>Room Types Booked</span>
+                  <span className={styles.statNum}>{Object.keys(menuByRestaurant).length}</span>
+                  <span className={styles.statLabel}>Restaurants</span>
+                </div>
+                <div className={styles.statCard}>
+                  <span className={styles.statNum}>{menuItems.filter(m => m.restaurant === 'Brasserie').length}</span>
+                  <span className={styles.statLabel}>Brasserie Items</span>
                 </div>
               </div>
 
-              {/* Recent Bookings + Popular Rooms */}
               <div className={styles.dashGrid}>
                 <div className={styles.dashPanel}>
-                  <h3 className={styles.panelHead}>Recent Bookings</h3>
-                  {bookings.length === 0 ? (
-                    <p className={styles.emptyMsg}>No bookings yet</p>
+                  <h3 className={styles.panelHead}>Menu by Restaurant</h3>
+                  {Object.keys(menuByRestaurant).length === 0 ? (
+                    <p className={styles.emptyMsg}>No menu items yet</p>
                   ) : (
-                    <div className={styles.recentList}>
-                      {bookings.slice(0, 5).map(b => (
-                        <div key={b.id} className={styles.recentItem} onClick={() => { setTab('bookings'); setSelected(b); }}>
-                          <div>
-                            <strong>{b.firstName} {b.lastName}</strong>
-                            <span className={styles.recentSub}>{b.room} — {fmtDate(b.checkin)}</span>
+                    <div className={styles.roomStats}>
+                      {Object.entries(menuByRestaurant).sort((a, b) => b[1] - a[1]).map(([rest, count]) => (
+                        <div key={rest} className={styles.roomStatRow}>
+                          <span>{rest}</span>
+                          <div className={styles.roomBar}>
+                            <div className={styles.roomBarFill} style={{ width: `${(count / menuItems.length) * 100}%` }} />
                           </div>
-                          <div className={styles.recentRight}>
-                            <span className={styles.statusDot} style={{ background: statusColor(b.status) }} />
-                            <span>${b.price}</span>
-                          </div>
+                          <span className={styles.roomCount}>{count}</span>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
                 <div className={styles.dashPanel}>
-                  <h3 className={styles.panelHead}>Room Popularity</h3>
-                  {Object.keys(roomCounts).length === 0 ? (
-                    <p className={styles.emptyMsg}>No data yet</p>
+                  <h3 className={styles.panelHead}>Recent Reviews</h3>
+                  {reviews.length === 0 ? (
+                    <p className={styles.emptyMsg}>No reviews yet</p>
                   ) : (
-                    <div className={styles.roomStats}>
-                      {Object.entries(roomCounts).sort((a, b) => b[1] - a[1]).map(([room, count]) => (
-                        <div key={room} className={styles.roomStatRow}>
-                          <span>{room}</span>
-                          <div className={styles.roomBar}>
-                            <div className={styles.roomBarFill} style={{ width: `${(count / bookings.length) * 100}%` }} />
+                    <div className={styles.recentList}>
+                      {reviews.slice(0, 5).map(rv => (
+                        <div key={rv.id} className={styles.recentItem} onClick={() => setTab('reviews')}>
+                          <div>
+                            <strong>{rv.name}</strong>
+                            <span className={styles.recentSub}>{'★'.repeat(rv.rating)} — {rv.status}</span>
                           </div>
-                          <span className={styles.roomCount}>{count}</span>
                         </div>
                       ))}
                     </div>
@@ -385,123 +384,115 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* ── BOOKINGS TAB ── */}
-          {tab === 'bookings' && (
-            <div className={styles.bookingsContent}>
-              <div className={styles.bookingsMain}>
+          {/* ── MENU TAB ── */}
+          {tab === 'menu' && (
+            <div className={styles.subContent}>
+              <div className={styles.subPanel}>
                 <div className={styles.tableHeader}>
-                  <h2 className={styles.panelHead}>All Bookings ({filteredBookings.length})</h2>
-                  <div className={styles.filters}>
-                    {['all', 'pending', 'confirmed', 'cancelled'].map(f => (
-                      <button key={f} className={`${styles.filterBtn} ${filterStatus === f ? styles.filterActive : ''}`} onClick={() => setFilterStatus(f)}>
-                        {f.charAt(0).toUpperCase() + f.slice(1)}
-                      </button>
-                    ))}
+                  <h2 className={styles.panelHead}>Menu ({filteredMenu.length})</h2>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <div className={styles.filters}>
+                      {['all', 'Breakfast', 'Lunch', 'Dinner'].map(f => (
+                        <button key={f} className={`${styles.filterBtn} ${mealFilter === f ? styles.filterActive : ''}`} onClick={() => setMealFilter(f)}>
+                          {f === 'all' ? 'All' : f}
+                        </button>
+                      ))}
+                    </div>
+                    <button className={styles.addBtn} onClick={() => openMenuForm()}>+ Add Item</button>
                   </div>
                 </div>
 
-                {filteredBookings.length === 0 ? (
-                  <p className={styles.emptyMsg}>No bookings found</p>
-                ) : (
-                  <div className={styles.tableWrap}>
-                    <table className={styles.table}>
-                      <thead>
-                        <tr>
-                          <th>Guest</th>
-                          <th>Room</th>
-                          <th>Check-in</th>
-                          <th>Check-out</th>
-                          <th>Total</th>
-                          <th>Status</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredBookings.map(b => (
-                          <tr key={b.id} className={selected?.id === b.id ? styles.activeRow : ''} onClick={() => setSelected(b)}>
-                            <td>
-                              <strong>{b.firstName} {b.lastName}</strong>
-                              <span className={styles.cellSub}>{b.email}</span>
-                            </td>
-                            <td>{b.room}</td>
-                            <td>{b.checkin}</td>
-                            <td>{b.checkout}</td>
-                            <td>${b.price}</td>
-                            <td>
-                              <span className={styles.statusBadge} style={{ background: statusColor(b.status) + '22', color: statusColor(b.status) }}>
-                                {b.status}
-                              </span>
-                            </td>
-                            <td>
-                              <div className={styles.actions} onClick={e => e.stopPropagation()}>
-                                {b.status === 'pending' && <button className={styles.actBtn} style={{ color: '#4caf50' }} onClick={() => updateStatus(b.id, 'confirmed')}>Confirm</button>}
-                                {b.status !== 'cancelled' && <button className={styles.actBtn} style={{ color: '#e74c3c' }} onClick={() => updateStatus(b.id, 'cancelled')}>Cancel</button>}
-                                <button className={styles.actBtn} style={{ color: '#666' }} onClick={() => deleteBooking(b.id)}>Delete</button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                {showMenuForm && (
+                  <div className={styles.formCard}>
+                    <h3 className={styles.formCardTitle}>{editingMenuItem ? 'Edit Menu Item' : 'Add Menu Item'}</h3>
+                    <div className={styles.formGrid}>
+                      <div className={styles.formField}>
+                        <label>Dish Name *</label>
+                        <input value={menuForm.name} onChange={e => setMenuForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Khinkali" />
+                      </div>
+                      <div className={styles.formField}>
+                        <label>Price</label>
+                        <input value={menuForm.price} onChange={e => setMenuForm(p => ({ ...p, price: e.target.value }))} placeholder="e.g. ₾25" />
+                      </div>
+                      <div className={styles.formField}>
+                        <label>Meal *</label>
+                        <select value={menuForm.meal} onChange={e => setMenuForm(p => ({ ...p, meal: e.target.value }))}>
+                          <option>Breakfast</option>
+                          <option>Lunch</option>
+                          <option>Dinner</option>
+                        </select>
+                      </div>
+                      <div className={styles.formField}>
+                        <label>Category *</label>
+                        <select value={menuForm.category} onChange={e => setMenuForm(p => ({ ...p, category: e.target.value }))}>
+                          <option>Starter</option>
+                          <option>Main Course</option>
+                          <option>Dessert</option>
+                          <option>Drink</option>
+                          <option>Wine</option>
+                          <option>Cocktail</option>
+                          <option>Snack</option>
+                        </select>
+                      </div>
+                      <div className={`${styles.formField} ${styles.formFull}`}>
+                        <label>Image</label>
+                        <div className={styles.imgUploadRow}>
+                          <label className={styles.uploadBtn}>
+                            {uploading ? 'Uploading...' : 'Upload Image'}
+                            <input type="file" accept="image/*" hidden onChange={e => e.target.files[0] && uploadImage(e.target.files[0], setMenuForm, 'img')} />
+                          </label>
+                          <span className={styles.orText}>or</span>
+                          <input value={menuForm.img} onChange={e => setMenuForm(p => ({ ...p, img: e.target.value }))} placeholder="Paste image URL..." style={{ flex: 1 }} />
+                        </div>
+                        {menuForm.img && <img src={menuForm.img} alt="Preview" className={styles.imgPreview} />}
+                      </div>
+                      <div className={`${styles.formField} ${styles.formFull}`}>
+                        <label>Description</label>
+                        <textarea value={menuForm.desc} onChange={e => setMenuForm(p => ({ ...p, desc: e.target.value }))} placeholder="Dish description..." />
+                      </div>
+                    </div>
+                    <div className={styles.formActions}>
+                      <button className={styles.formCancel} onClick={() => setShowMenuForm(false)}>Cancel</button>
+                      <button className={styles.formSave} onClick={saveMenuItem}>{editingMenuItem ? 'Update' : 'Add Item'}</button>
+                    </div>
                   </div>
                 )}
+
+                {filteredMenu.length === 0 && !showMenuForm ? (
+                  <p className={styles.emptyMsg}>No menu items yet. Click &quot;+ Add Item&quot; to create one.</p>
+                ) : (
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>Dish</th>
+                        <th>Meal</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredMenu.map(item => (
+                        <tr key={item.id}>
+                          <td>
+                            <strong>{item.name}</strong>
+                            {item.desc && <span className={styles.cellSub}>{item.desc.substring(0, 60)}{item.desc.length > 60 ? '...' : ''}</span>}
+                          </td>
+                          <td>{item.meal || '—'}</td>
+                          <td>{item.category}</td>
+                          <td>{item.price || '—'}</td>
+                          <td>
+                            <div className={styles.actions}>
+                              <button onClick={() => openMenuForm(item)} className={styles.actBtn} style={{ color: 'var(--accent)' }}>Edit</button>
+                              <button onClick={() => deleteMenuItem(item.id)} className={styles.actBtn} style={{ color: '#e74c3c' }}>Delete</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
-
-              {/* Detail Sidebar */}
-              {selected && (
-                <div className={styles.detailPanel}>
-                  <div className={styles.detailHeader}>
-                    <h3 className={styles.panelHead}>Booking Details</h3>
-                    <button className={styles.closeBtn} onClick={() => setSelected(null)}>&times;</button>
-                  </div>
-
-                  <div className={styles.detailStatus}>
-                    <span className={styles.statusBadge} style={{ background: statusColor(selected.status) + '22', color: statusColor(selected.status) }}>
-                      {selected.status}
-                    </span>
-                    <span className={styles.detailId}>#{selected.id}</span>
-                  </div>
-
-                  <div className={styles.detailSection}>
-                    <h4 className={styles.detailSectionTitle}>Guest Information</h4>
-                    <div className={styles.detailGrid}>
-                      <div className={styles.detailItem}><span className={styles.dLabel}>Name</span><span>{selected.firstName} {selected.lastName}</span></div>
-                      <div className={styles.detailItem}><span className={styles.dLabel}>Email</span><span>{selected.email}</span></div>
-                      <div className={styles.detailItem}><span className={styles.dLabel}>Phone</span><span>{selected.countryCode} {selected.phone}</span></div>
-                      <div className={styles.detailItem}><span className={styles.dLabel}>Guests</span><span>{selected.adults} adults, {selected.children} children</span></div>
-                    </div>
-                  </div>
-
-                  <div className={styles.detailSection}>
-                    <h4 className={styles.detailSectionTitle}>Reservation</h4>
-                    <div className={styles.detailGrid}>
-                      <div className={styles.detailItem}><span className={styles.dLabel}>Room</span><span>{selected.room}</span></div>
-                      <div className={styles.detailItem}><span className={styles.dLabel}>Total</span><span>${selected.price}</span></div>
-                      <div className={styles.detailItem}><span className={styles.dLabel}>Check-in</span><span>{selected.checkin}</span></div>
-                      <div className={styles.detailItem}><span className={styles.dLabel}>Check-out</span><span>{selected.checkout}</span></div>
-                      <div className={styles.detailItem}><span className={styles.dLabel}>Arrival</span><span>{selected.arrivalTime}</span></div>
-                      <div className={styles.detailItem}><span className={styles.dLabel}>Card</span><span>**** {selected.cardLast4}</span></div>
-                    </div>
-                  </div>
-
-                  {selected.specialRequest && (
-                    <div className={styles.detailSection}>
-                      <h4 className={styles.detailSectionTitle}>Special Request</h4>
-                      <p className={styles.detailNote}>{selected.specialRequest}</p>
-                    </div>
-                  )}
-
-                  <div className={styles.detailSection}>
-                    <p className={styles.detailMeta}>Booked on {fmtDateTime(selected.createdAt)}</p>
-                  </div>
-
-                  <div className={styles.detailActions}>
-                    {selected.status === 'pending' && <button className={styles.detailActionBtn} style={{ background: '#4caf50' }} onClick={() => updateStatus(selected.id, 'confirmed')}>Confirm Booking</button>}
-                    {selected.status !== 'cancelled' && <button className={styles.detailActionBtn} style={{ background: '#e74c3c' }} onClick={() => updateStatus(selected.id, 'cancelled')}>Cancel Booking</button>}
-                    <button className={styles.detailActionBtn} style={{ background: 'rgba(245,240,235,0.08)', color: '#888' }} onClick={() => deleteBooking(selected.id)}>Delete</button>
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
@@ -523,8 +514,8 @@ export default function AdminPage() {
                         <input value={roomForm.name} onChange={e => setRoomForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Deluxe Suite" />
                       </div>
                       <div className={styles.formField}>
-                        <label>Price per Night (USD) *</label>
-                        <input type="number" value={roomForm.price} onChange={e => setRoomForm(p => ({ ...p, price: e.target.value }))} placeholder="e.g. 350" />
+                        <label>Size (m²) *</label>
+                        <input type="number" min="1" value={roomForm.size} onChange={e => { const val = e.target.value; if (val === '' || Number(val) >= 0) setRoomForm(p => ({ ...p, size: val })); }} placeholder="e.g. 32" />
                       </div>
                       <div className={`${styles.formField} ${styles.formFull}`}>
                         <label>Image</label>
@@ -556,7 +547,7 @@ export default function AdminPage() {
                       {room.img && <img src={room.img} alt={room.name} className={styles.roomCardImg} />}
                       <div className={styles.roomCardBody}>
                         <h4 className={styles.roomCardName}>{room.name}</h4>
-                        <p className={styles.roomCardPrice}>${room.price} <small>/ night</small></p>
+                        <p className={styles.roomCardPrice}>{room.size || room.price} m²</p>
                         <p className={styles.roomCardDesc}>{room.desc}</p>
                         <div className={styles.roomCardActions}>
                           <button onClick={() => openRoomForm(room)} className={styles.actBtn} style={{ color: 'var(--accent)' }}>Edit</button>

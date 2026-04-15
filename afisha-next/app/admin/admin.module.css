@@ -162,11 +162,13 @@
 .formFull { grid-column: 1 / -1; }
 .formField { display: flex; flex-direction: column; gap: 5px; }
 .formField label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--taupe); }
-.formField input, .formField textarea {
+.formField input, .formField textarea, .formField select {
   padding: 11px 14px; background: rgba(245,240,235,0.04); border: 1px solid rgba(245,240,235,0.1);
   color: var(--cream); font-family: var(--font-body); font-size: 13px; outline: none; transition: border-color 0.3s; border-radius: 0;
 }
-.formField input:focus, .formField textarea:focus { border-color: var(--accent); }
+.formField select { appearance: none; cursor: pointer; color: rgba(245,240,235,0.2); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a19581' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+.formField select option { background: #151525; color: rgba(245,240,235,0.2); }
+.formField input:focus, .formField textarea:focus, .formField select:focus { border-color: var(--accent); }
 .formField input::placeholder, .formField textarea::placeholder { color: rgba(245,240,235,0.2); }
 .formField textarea { resize: vertical; min-height: 60px; }
 .formActions { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
