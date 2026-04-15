@@ -2360,26 +2360,26 @@ body.lang-ka .welcome__signature {
         <li><a href="#rooms" data-i18n="footer.roomsuites">Rooms & Suites</a></li>
         <li><a href="#restaurants" data-i18n="nav.restaurants">Restaurants</a></li>
         <li><a href="#wellness" data-i18n="nav.facilities">Facilities</a></li>
-        <li><a href="#" data-i18n="footer.gallery">Gallery</a></li>
+        <li><a href="gallery.html" data-i18n="footer.gallery">Gallery</a></li>
       </ul>
     </div>
 
     <div>
       <p class="footer__col-title" data-i18n="footer.info">Information</p>
       <ul class="footer__links">
-        <li><a href="#" data-i18n="footer.offers">Offers</a></li>
-        <li><a href="#" data-i18n="footer.events">Events</a></li>
-        <li><a href="#" data-i18n="footer.press">Press</a></li>
-        <li><a href="#" data-i18n="footer.careers">Careers</a></li>
-        <li><a href="#" data-i18n="footer.privacy">Privacy Policy</a></li>
+        <li><a href="offers.html" data-i18n="footer.offers">Offers</a></li>
+        <li><a href="events.html" data-i18n="footer.events">Events</a></li>
+        <li><a href="press.html" data-i18n="footer.press">Press</a></li>
+        <li><a href="careers.html" data-i18n="footer.careers">Careers</a></li>
+        <li><a href="privacy.html" data-i18n="footer.privacy">Privacy Policy</a></li>
       </ul>
     </div>
 
     <div>
       <p class="footer__col-title" data-i18n="footer.connected">Stay Connected</p>
       <p class="footer__newsletter-text" data-i18n="footer.subscribe">Subscribe for exclusive offers and the latest from Hotel Afisha.</p>
-      <form class="footer__newsletter-form" onsubmit="event.preventDefault();">
-        <input type="email" data-i18n-placeholder="footer.emailph" placeholder="Your email address" aria-label="Email">
+      <form class="footer__newsletter-form" onsubmit="event.preventDefault(); const email = this.querySelector('input').value; if(email) { window.open('mailto:Info@hotelafisha.com?subject=Newsletter Subscription&body=Please add ' + encodeURIComponent(email) + ' to your mailing list.'); this.querySelector('input').value=''; alert('Thank you for subscribing!'); }">
+        <input type="email" required data-i18n-placeholder="footer.emailph" placeholder="Your email address" aria-label="Email">
         <button type="submit" data-i18n="footer.join">Join</button>
       </form>
     </div>
@@ -2388,7 +2388,7 @@ body.lang-ka .welcome__signature {
   <div class="footer__bottom">
     <span data-i18n="footer.copy">&copy; 2026 Hotel Afisha. All rights reserved.</span>
     <span data-i18n="footer.tagline">Designed with cinematic love in Tbilisi</span>
-    <a href="#" data-i18n="footer.privacy">Privacy Policy</a>
+    <a href="privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
   </div>
 </footer>
 
