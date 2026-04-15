@@ -13,6 +13,10 @@ export default function AdminPage() {
   const [subscribers, setSubscribers] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [events, setEvents] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [editingReview, setEditingReview] = useState(null);
+  const [reviewForm, setReviewForm] = useState({ name: '', country: '', text: '', rating: 5 });
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
   const [tab, setTab] = useState('dashboard');
@@ -62,20 +66,23 @@ export default function AdminPage() {
 
   const fetchData = async () => {
     setLoading(true);
-    const [bRes, sRes, rRes, eRes] = await Promise.all([
+    const [bRes, sRes, rRes, eRes, rvRes] = await Promise.all([
       fetch('/api/bookings'),
       fetch('/api/newsletter'),
       fetch('/api/rooms'),
       fetch('/api/events'),
+      fetch('/api/reviews'),
     ]);
     const bData = await bRes.json();
     const sData = await sRes.json();
     const rData = await rRes.json();
     const eData = await eRes.json();
+    const rvData = await rvRes.json();
     setBookings(bData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
     setSubscribers(sData.sort((a, b) => new Date(b.subscribedAt) - new Date(a.subscribedAt)));
     setRooms(rData);
     setEvents(eData.sort((a, b) => new Date(a.date) - new Date(b.date)));
+    setReviews(rvData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
     setLoading(false);
   };
 
@@ -103,9 +110,8 @@ export default function AdminPage() {
   };
 
   const deleteRoom = async (id) => {
-    if (!confirm('Delete this room?')) return;
     await fetch(`/api/rooms/${id}`, { method: 'DELETE' });
-    fetchData();
+    await fetchData();
   };
 
   // Event CRUD
@@ -132,9 +138,46 @@ export default function AdminPage() {
   };
 
   const deleteEvent = async (id) => {
-    if (!confirm('Delete this event?')) return;
     await fetch(`/api/events/${id}`, { method: 'DELETE' });
-    fetchData();
+    await fetchData();
+  };
+
+  // Review CRUD
+  const openReviewForm = (review = null) => {
+    if (review) {
+      setEditingReview(review);
+      setReviewForm({ name: review.name, country: review.country, text: review.text, rating: review.rating });
+    } else {
+      setEditingReview(null);
+      setReviewForm({ name: '', country: '', text: '', rating: 5 });
+    }
+    setShowReviewForm(true);
+  };
+
+  const updateReviewStatus = async (id, status) => {
+    await fetch(`/api/reviews/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) });
+    await fetchData();
+  };
+
+  const saveReview = async () => {
+    if (!reviewForm.name || !reviewForm.text) return;
+    if (editingReview) {
+      await fetch(`/api/reviews/${editingReview.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reviewForm) });
+    } else {
+      await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...reviewForm, status: 'approved' }) });
+    }
+    setShowReviewForm(false);
+    await fetchData();
+  };
+
+  const deleteReview = async (id) => {
+    await fetch(`/api/reviews/${id}`, { method: 'DELETE' });
+    await fetchData();
+  };
+
+  const deleteSubscriber = async (email) => {
+    await fetch('/api/newsletter', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+    await fetchData();
   };
 
   const [uploading, setUploading] = useState(false);
@@ -162,9 +205,8 @@ export default function AdminPage() {
   };
 
   const deleteBooking = async (id) => {
-    if (!confirm('Delete this booking permanently?')) return;
     await fetch(`/api/bookings/${id}`, { method: 'DELETE' });
-    fetchData();
+    await fetchData();
     if (selected?.id === id) setSelected(null);
   };
 
@@ -248,7 +290,7 @@ export default function AdminPage() {
 
       {/* Navigation */}
       <nav className={styles.nav}>
-        {['dashboard', 'bookings', 'rooms', 'events', 'subscribers'].map(t => (
+        {['dashboard', 'bookings', 'rooms', 'events', 'reviews', 'subscribers'].map(t => (
           <button key={t} className={`${styles.navBtn} ${tab === t ? styles.navActive : ''}`} onClick={() => { setTab(t); setSelected(null); }}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
@@ -619,6 +661,90 @@ export default function AdminPage() {
             </div>
           )}
 
+          {/* ── REVIEWS TAB ── */}
+          {tab === 'reviews' && (
+            <div className={styles.subContent}>
+              <div className={styles.subPanel}>
+                <div className={styles.tableHeader}>
+                  <h2 className={styles.panelHead}>Guest Reviews ({reviews.length})</h2>
+                  <button className={styles.addBtn} onClick={() => openReviewForm()}>+ Add Review</button>
+                </div>
+
+                {showReviewForm && (
+                  <div className={styles.formCard}>
+                    <h3 className={styles.formCardTitle}>{editingReview ? 'Edit Review' : 'Add New Review'}</h3>
+                    <div className={styles.formGrid}>
+                      <div className={styles.formField}>
+                        <label>Guest Name *</label>
+                        <input value={reviewForm.name} onChange={e => setReviewForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Sophie Laurent" />
+                      </div>
+                      <div className={styles.formField}>
+                        <label>Country</label>
+                        <input value={reviewForm.country} onChange={e => setReviewForm(p => ({ ...p, country: e.target.value }))} placeholder="e.g. France" />
+                      </div>
+                      <div className={styles.formField}>
+                        <label>Rating</label>
+                        <select value={reviewForm.rating} onChange={e => setReviewForm(p => ({ ...p, rating: Number(e.target.value) }))}>
+                          <option value={5}>5 Stars</option>
+                          <option value={4}>4 Stars</option>
+                          <option value={3}>3 Stars</option>
+                        </select>
+                      </div>
+                      <div className={`${styles.formField} ${styles.formFull}`}>
+                        <label>Review Text *</label>
+                        <textarea value={reviewForm.text} onChange={e => setReviewForm(p => ({ ...p, text: e.target.value }))} placeholder="Guest review..." />
+                      </div>
+                    </div>
+                    <div className={styles.formActions}>
+                      <button className={styles.formCancel} onClick={() => setShowReviewForm(false)}>Cancel</button>
+                      <button className={styles.formSave} onClick={saveReview}>{editingReview ? 'Update' : 'Add Review'}</button>
+                    </div>
+                  </div>
+                )}
+
+                {reviews.length === 0 && !showReviewForm ? (
+                  <p className={styles.emptyMsg}>No reviews yet. Click &quot;+ Add Review&quot; to create one.</p>
+                ) : (
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>Guest</th>
+                        <th>Country</th>
+                        <th>Review</th>
+                        <th>Rating</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reviews.map(rv => (
+                        <tr key={rv.id}>
+                          <td><strong>{rv.name}</strong></td>
+                          <td>{rv.country || '—'}</td>
+                          <td><span className={styles.cellSub}>{rv.text.substring(0, 80)}{rv.text.length > 80 ? '...' : ''}</span></td>
+                          <td>{'★'.repeat(rv.rating)}</td>
+                          <td>
+                            <span className={styles.statusBadge} style={{ background: (rv.status === 'approved' ? '#4caf50' : '#c9a96e') + '22', color: rv.status === 'approved' ? '#4caf50' : '#c9a96e' }}>
+                              {rv.status || 'pending'}
+                            </span>
+                          </td>
+                          <td>
+                            <div className={styles.actions}>
+                              {rv.status !== 'approved' && <button onClick={() => updateReviewStatus(rv.id, 'approved')} className={styles.actBtn} style={{ color: '#4caf50' }}>Approve</button>}
+                              {rv.status === 'approved' && <button onClick={() => updateReviewStatus(rv.id, 'pending')} className={styles.actBtn} style={{ color: '#c9a96e' }}>Hide</button>}
+                              <button onClick={() => openReviewForm(rv)} className={styles.actBtn} style={{ color: 'var(--accent)' }}>Edit</button>
+                              <button onClick={() => deleteReview(rv.id)} className={styles.actBtn} style={{ color: '#e74c3c' }}>Delete</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* ── SUBSCRIBERS TAB ── */}
           {tab === 'subscribers' && (
             <div className={styles.subContent}>
@@ -632,6 +758,7 @@ export default function AdminPage() {
                       <tr>
                         <th>Email</th>
                         <th>Subscribed</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -639,6 +766,7 @@ export default function AdminPage() {
                         <tr key={i}>
                           <td>{s.email}</td>
                           <td>{fmtDateTime(s.subscribedAt)}</td>
+                          <td><button onClick={() => deleteSubscriber(s.email)} className={styles.actBtn} style={{ color: '#e74c3c' }}>Delete</button></td>
                         </tr>
                       ))}
                     </tbody>

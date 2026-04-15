@@ -1398,6 +1398,166 @@ body.lang-ka .welcome__signature {
 }
 
 /* ═══════════════════════════════════════════
+   REVIEWS
+   ═══════════════════════════════════════════ */
+
+.reviews {
+  padding: clamp(60px, 8vw, 120px) clamp(24px, 4vw, 60px);
+  background: var(--dark);
+}
+
+.reviews__header {
+  text-align: center;
+  margin-bottom: clamp(40px, 5vw, 60px);
+}
+
+.reviews .section-title,
+.review-form__title {
+  color: #e74c3c;
+}
+
+.reviews__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 28px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.review-card {
+  background: var(--dark-surface);
+  border: 1px solid rgba(245, 240, 235, 0.06);
+  padding: 36px 32px;
+  transition: border-color 0.3s;
+}
+
+.review-card:hover {
+  border-color: rgba(245, 240, 235, 0.15);
+}
+
+.review-card__stars {
+  color: #c9a96e;
+  font-size: 18px;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+
+.review-card__text {
+  font-size: 15px;
+  line-height: 1.8;
+  color: rgba(245, 240, 235, 0.6);
+  font-style: italic;
+  margin-bottom: 24px;
+}
+
+.review-card__author {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.review-card__country {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  margin-top: 4px;
+}
+
+.review-form-wrap {
+  max-width: 600px;
+  margin: clamp(40px, 5vw, 60px) auto 0;
+  background: var(--dark-surface);
+  border: 1px solid rgba(245, 240, 235, 0.06);
+  padding: 40px 36px;
+}
+
+.review-form__title {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.review-form__row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.review-form input,
+.review-form textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(245, 240, 235, 0.04);
+  border: 1px solid rgba(245, 240, 235, 0.1);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.review-form input:focus,
+.review-form textarea:focus {
+  border-color: var(--accent);
+}
+
+.review-form input::placeholder,
+.review-form textarea::placeholder {
+  color: rgba(245, 240, 235, 0.25);
+}
+
+.review-form textarea {
+  resize: vertical;
+  margin-bottom: 16px;
+}
+
+.review-form__stars {
+  display: flex;
+  gap: 6px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.review-form__stars span {
+  color: rgba(245, 240, 235, 0.15);
+  transition: color 0.2s;
+}
+
+.review-form__stars span.active {
+  color: #c9a96e;
+}
+
+.review-form__btn {
+  width: 100%;
+  padding: 14px;
+  background: #c9a96e;
+  border: none;
+  color: #0e0e1a;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.review-form__btn:hover {
+  background: #c9a96e;
+}
+
+.review-form__note {
+  text-align: center;
+  font-size: 13px;
+  margin-top: 12px;
+  color: var(--taupe);
+}
+
+/* ═══════════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════════ */
 
@@ -2282,21 +2442,32 @@ body.lang-ka .welcome__signature {
   </div>
 </section>
 
-<!-- ═══════════ CTA SECTION ═══════════ -->
-<section class="cta-section">
-  <div class="cta-section__bg">
-    <img src="https://cdn.prod.website-files.com/669a26f7d42524ab776f6ebf/679a01fff985dd2350b36a13_DSCF8448-min.jpg" alt="Hotel Afisha Ambiance">
+<!-- ═══════════ REVIEWS ═══════════ -->
+<section class="reviews" id="reviews">
+  <div class="reviews__header">
+    <p class="section-label reveal" data-i18n="reviews.label">Guest Voices</p>
+    <h2 class="section-title reveal reveal-delay-1" data-i18n="reviews.title">What Our Guests Say</h2>
   </div>
-  <div class="cta-section__inner">
-    <p class="section-label reveal" data-i18n="cta.label">Your Story</p>
-    <h2 class="cta-section__title reveal reveal-delay-1" data-i18n="cta.title" data-i18n-html="true">Let's Capture<br>Your Story</h2>
-    <p class="cta-section__subtitle reveal reveal-delay-2" data-i18n="cta.subtitle">Every great film begins with a single scene. Let yours begin here, at the intersection of Georgian artistry and modern comfort.</p>
-    <div class="reveal reveal-delay-3">
-      <a href="#contact" class="btn btn--light">
-        <span data-i18n="cta.btn">Get In Touch</span>
-        <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
-    </div>
+  <div class="reviews__grid" id="reviewsGrid">
+    <!-- Reviews loaded dynamically -->
+  </div>
+
+  <div class="review-form-wrap reveal" id="reviewFormWrap">
+    <h3 class="review-form__title">Share Your Experience</h3>
+    <form class="review-form" id="guestReviewForm">
+      <div class="review-form__row">
+        <input type="text" id="rvName" placeholder="Your name" required>
+        <input type="text" id="rvCountry" placeholder="Country">
+      </div>
+      <div class="review-form__row">
+        <div class="review-form__stars" id="rvStars">
+          <span data-star="1">★</span><span data-star="2">★</span><span data-star="3">★</span><span data-star="4">★</span><span data-star="5" class="active">★</span>
+        </div>
+      </div>
+      <textarea id="rvText" placeholder="Tell us about your stay..." rows="4" required></textarea>
+      <button type="submit" class="review-form__btn">Submit Review</button>
+      <p class="review-form__note" id="rvNote"></p>
+    </form>
   </div>
 </section>
 
@@ -2378,7 +2549,7 @@ body.lang-ka .welcome__signature {
     <div>
       <p class="footer__col-title" data-i18n="footer.connected">Stay Connected</p>
       <p class="footer__newsletter-text" data-i18n="footer.subscribe">Subscribe for exclusive offers and the latest from Hotel Afisha.</p>
-      <form class="footer__newsletter-form" onsubmit="event.preventDefault(); const email = this.querySelector('input').value; if(email) { window.open('mailto:Info@hotelafisha.com?subject=Newsletter Subscription&body=Please add ' + encodeURIComponent(email) + ' to your mailing list.'); this.querySelector('input').value=''; alert('Thank you for subscribing!'); }">
+      <form class="footer__newsletter-form" onsubmit="event.preventDefault(); const email = this.querySelector('input').value; if(email) { fetch('http://localhost:3002/api/newsletter', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email}) }).then(r => { if(r.ok) { this.querySelector('input').value=''; alert('Thank you for subscribing!'); } else if(r.status===409) { alert('You are already subscribed!'); } else { alert('Something went wrong. Please try again.'); } }).catch(() => alert('Could not connect to server.')); }">
         <input type="email" required data-i18n-placeholder="footer.emailph" placeholder="Your email address" aria-label="Email">
         <button type="submit" data-i18n="footer.join">Join</button>
       </form>
@@ -2929,6 +3100,84 @@ body.lang-ka .welcome__signature {
   });
 
   // ── Room card book links open in new tab ────
+
+  // ── Load reviews from API (only approved) ────
+  const reviewsGrid = document.getElementById('reviewsGrid');
+  fetch('http://localhost:3002/api/reviews')
+    .then(r => r.json())
+    .then(allReviews => {
+      const reviews = allReviews.filter(rv => rv.status === 'approved');
+      if (!reviews.length) {
+        reviewsGrid.innerHTML = '<p style="text-align:center;color:var(--taupe);grid-column:1/-1;">Reviews coming soon.</p>';
+        return;
+      }
+      reviewsGrid.innerHTML = reviews.map(rv => `
+        <div class="review-card reveal">
+          <div class="review-card__stars">${'★'.repeat(rv.rating)}${'☆'.repeat(5 - rv.rating)}</div>
+          <p class="review-card__text">"${rv.text}"</p>
+          <p class="review-card__author">${rv.name}</p>
+          ${rv.country ? `<p class="review-card__country">${rv.country}</p>` : ''}
+        </div>
+      `).join('');
+      reviewsGrid.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    })
+    .catch(() => {
+      reviewsGrid.innerHTML = '<p style="text-align:center;color:var(--taupe);grid-column:1/-1;">Reviews coming soon.</p>';
+    });
+
+  // ── Star rating picker ────
+  let selectedRating = 5;
+  const starsWrap = document.getElementById('rvStars');
+  if (starsWrap) {
+    const stars = starsWrap.querySelectorAll('span');
+    const updateStars = (n) => {
+      stars.forEach(s => {
+        s.classList.toggle('active', Number(s.dataset.star) <= n);
+      });
+    };
+    updateStars(5);
+    stars.forEach(s => {
+      s.addEventListener('click', () => {
+        selectedRating = Number(s.dataset.star);
+        updateStars(selectedRating);
+      });
+    });
+  }
+
+  // ── Guest review form submit ────
+  const reviewForm = document.getElementById('guestReviewForm');
+  const rvNote = document.getElementById('rvNote');
+  if (reviewForm) {
+    reviewForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('rvName').value.trim();
+      const country = document.getElementById('rvCountry').value.trim();
+      const text = document.getElementById('rvText').value.trim();
+      if (!name || !text) return;
+
+      fetch('http://localhost:3002/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, country, text, rating: selectedRating })
+      })
+      .then(r => {
+        if (r.ok) {
+          reviewForm.reset();
+          selectedRating = 5;
+          if (starsWrap) starsWrap.querySelectorAll('span').forEach(s => s.classList.toggle('active', Number(s.dataset.star) <= 5));
+          rvNote.textContent = 'Thank you! Your review will appear after approval.';
+          rvNote.style.color = '#4caf50';
+        } else {
+          rvNote.textContent = 'Something went wrong. Please try again.';
+          rvNote.style.color = '#e74c3c';
+        }
+      })
+      .catch(() => {
+        rvNote.textContent = 'Could not connect to server.';
+        rvNote.style.color = '#e74c3c';
+      });
+    });
+  }
 
 })();
 </script>
